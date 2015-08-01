@@ -69,10 +69,6 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     self.textContainer.lineFragmentPadding = 0;
     
     _placeholderLabel = [[UILabel alloc] initWithFrame:self.frame];
-    if (!self.font) {
-        // by default self.font may be nil - so make UITextView use UILabel's default
-        self.font = _placeholderLabel.font;
-    }
     _placeholderLabel.font = self.font;
     _placeholderLabel.text = self.placeholder;
     _placeholderLabel.numberOfLines = 0;
@@ -88,7 +84,7 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     [self addSubview:_floatingLabel];
 	
     // some basic default fonts/colors
-    _floatingLabelFont = [self defaultFloatingLabelFont];
+    _floatingLabelFont = [UIFont fontWithName:self.font.fontName size:11.0f];
     _floatingLabel.font = _floatingLabelFont;
     _floatingLabelTextColor = [UIColor grayColor];
     _floatingLabel.textColor = _floatingLabelTextColor;
@@ -125,20 +121,6 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
 
 #pragma mark -
 
-- (UIFont *)defaultFloatingLabelFont
-{
-    UIFont *textViewFont = nil;
-    
-    if (!textViewFont && self.placeholderLabel.attributedText && self.placeholderLabel.attributedText.length > 0) {
-        textViewFont = [self.placeholderLabel.attributedText attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
-    }
-    if (!textViewFont) {
-        textViewFont = self.placeholderLabel.font;
-    }
-    
-    return [UIFont fontWithName:textViewFont.fontName size:roundf(textViewFont.pointSize * 0.7f)];
-}
-
 - (void)setPlaceholder:(NSString *)placeholder
 {
     _placeholder = placeholder;
@@ -167,7 +149,7 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    [self adjustTextContainerInsetTop];
+    [self adjustTextContainerInsetTop:self.textContainerInset];
     
     CGSize floatingLabelSize = [_floatingLabel sizeThatFits:_floatingLabel.superview.bounds.size];
     
@@ -185,6 +167,10 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
                                          placeholderLabelSize.width, placeholderLabelSize.height);
     
     [self setLabelOriginForTextAlignment];
+    
+    if (self.floatingLabelFont) {
+        _floatingLabel.font = self.floatingLabelFont;
+    }
     
     BOOL firstResponder = self.isFirstResponder;
     _floatingLabel.textColor = (firstResponder && self.text && self.text.length > 0 ?
@@ -258,13 +244,19 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     }
 }
 
-- (void)adjustTextContainerInsetTop
+- (void)adjustTextContainerInsetTop:(UIEdgeInsets)edgeInsets
 {
-    self.textContainerInset = UIEdgeInsetsMake(self.startingTextContainerInsetTop
+    [super setTextContainerInset:UIEdgeInsetsMake(self.startingTextContainerInsetTop
                                                + _floatingLabel.font.lineHeight + _placeholderYPadding,
-                                               self.textContainerInset.left,
-                                               self.textContainerInset.bottom,
-                                               self.textContainerInset.right);
+                                               edgeInsets.left,
+                                               edgeInsets.bottom,
+                                               edgeInsets.right)];
+}
+
+- (void)setTextContainerInset:(UIEdgeInsets)textContainerInset
+{
+    self.startingTextContainerInsetTop = textContainerInset.top;
+    [self adjustTextContainerInsetTop:textContainerInset];
 }
 
 - (void)setLabelOriginForTextAlignment
@@ -312,7 +304,7 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
 - (void)setFloatingLabelFont:(UIFont *)floatingLabelFont
 {
     _floatingLabelFont = floatingLabelFont;
-    _floatingLabel.font = _floatingLabelFont ? _floatingLabelFont : [self defaultFloatingLabelFont];
+    _floatingLabel.font = (_floatingLabelFont ? _floatingLabelFont : [UIFont boldSystemFontOfSize:12.0f]);
     self.placeholder = self.placeholder; // Force the label to lay itself out with the new font.
 }
 
