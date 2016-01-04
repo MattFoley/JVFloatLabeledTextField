@@ -249,7 +249,7 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     if ([self.text length] || self.keepBaseline) {
         rect = [self insetRectForBounds:rect];
     }
-    return CGRectIntegral(rect);
+    return CGRectInset(CGRectIntegral(rect), 5, 5);
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds
@@ -258,7 +258,7 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     if ([self.text length] || self.keepBaseline) {
         rect = [self insetRectForBounds:rect];
     }
-    return CGRectIntegral(rect);
+    return CGRectInset(CGRectIntegral(rect), 5, 5);
 }
 
 - (CGRect)insetRectForBounds:(CGRect)rect {

@@ -84,7 +84,7 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     [self addSubview:_floatingLabel];
 	
     // some basic default fonts/colors
-    _floatingLabelFont = [UIFont boldSystemFontOfSize:12.0f];
+    _floatingLabelFont = [UIFont fontWithName:self.font.fontName size:11.0f];
     _floatingLabel.font = _floatingLabelFont;
     _floatingLabelTextColor = [UIColor grayColor];
     _floatingLabel.textColor = _floatingLabelTextColor;
@@ -149,7 +149,7 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    [self adjustTextContainerInsetTop];
+    [self adjustTextContainerInsetTop:self.textContainerInset];
     
     CGSize floatingLabelSize = [_floatingLabel sizeThatFits:_floatingLabel.superview.bounds.size];
     
@@ -244,19 +244,19 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     }
 }
 
-- (void)adjustTextContainerInsetTop
+- (void)adjustTextContainerInsetTop:(UIEdgeInsets)edgeInsets
 {
     [super setTextContainerInset:UIEdgeInsetsMake(self.startingTextContainerInsetTop
                                                + _floatingLabel.font.lineHeight + _placeholderYPadding,
-                                               self.textContainerInset.left,
-                                               self.textContainerInset.bottom,
-                                               self.textContainerInset.right)];
+                                               edgeInsets.left,
+                                               edgeInsets.bottom,
+                                               edgeInsets.right)];
 }
 
 - (void)setTextContainerInset:(UIEdgeInsets)textContainerInset
 {
-    [super setTextContainerInset:textContainerInset];
     self.startingTextContainerInsetTop = textContainerInset.top;
+    [self adjustTextContainerInsetTop:textContainerInset];
 }
 
 - (void)setLabelOriginForTextAlignment
