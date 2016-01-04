@@ -246,11 +246,17 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
 
 - (void)adjustTextContainerInsetTop
 {
-    self.textContainerInset = UIEdgeInsetsMake(self.startingTextContainerInsetTop
+    [super setTextContainerInset:UIEdgeInsetsMake(self.startingTextContainerInsetTop
                                                + _floatingLabel.font.lineHeight + _placeholderYPadding,
                                                self.textContainerInset.left,
                                                self.textContainerInset.bottom,
-                                               self.textContainerInset.right);
+                                               self.textContainerInset.right)];
+}
+
+- (void)setTextContainerInset:(UIEdgeInsets)textContainerInset
+{
+    [super setTextContainerInset:textContainerInset];
+    self.startingTextContainerInsetTop = textContainerInset.top;
 }
 
 - (void)setLabelOriginForTextAlignment
